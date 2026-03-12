@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  大野ヒロアキ流 記事チェック
+  Copyright (c) 2024-2026 大野ヒロアキ All Rights Reserved.
+  開発者: 大野ヒロアキ (Hiroaki Ohno)
+  本ソースコードの無断複製・転載・再配布を禁じます。
+  ============================================================
+-->
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大野ヒロアキ流 記事チェック</title>
+  <meta name="author" content="大野ヒロアキ">
+  <meta name="copyright" content="Copyright (c) 2024-2026 大野ヒロアキ All Rights Reserved.">
+  <meta name="description" content="記事URLを入力するとSEO・CVR・ペルソナなどを診断する大野ヒロアキ開発のWebツール">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <h1 class="logo">大野ヒロアキ流 記事チェック</h1>
+        <p class="tagline">記事URLを入力するとSEO・CVRなどを診断します</p>
+      </div>
+      <div class="header-right">
+        <button id="themeToggle" class="btn-icon" title="テーマ切替">
+          <span class="icon-sun">☀️</span><span class="icon-moon">🌙</span>
+        </button>
+        <button id="historyToggle" class="btn-icon" title="診断履歴">📋</button>
+      </div>
+    </div>
+    <div class="url-form">
+      <input type="url" id="urlInput" placeholder="記事URLを入力してください" autocomplete="url">
+      <button id="fetchBtn" class="btn-primary">記事を読み込む</button>
+    </div>
+  </header>
+
+  <!-- ===== Loading ===== -->
+  <div id="loading" class="loading hidden">
+    <div class="spinner"></div>
+    <p>記事を読み込み・分析中...</p>
+  </div>
+
+  <!-- ===== Main Content ===== -->
+  <main id="mainContent" class="main hidden">
+    <!-- Left Panel: 診断結果 -->
+    <aside class="panel-left" id="panelLeft"></aside>
+    <!-- Right Panel: 記事本文 -->
+    <section class="panel-right" id="panelRight">
+      <div class="article-meta" id="articleMeta"></div>
+      <div class="article-body" id="articleBody"></div>
+    </section>
+  </main>
+
+  <!-- ===== History Modal ===== -->
+  <div id="historyModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>診断履歴</h2>
+        <button id="historyClose" class="btn-icon">✕</button>
+      </div>
+      <div class="modal-body" id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <p>Developed by <strong>大野ヒロアキ</strong> &copy; 2024-2026 All Rights Reserved.</p>
+  </footer>
+
+  <!-- ===== Toast ===== -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ===== Scripts (module order matters) ===== -->
+  <script src="utils/textAnalyzer.js"></script>
+  <script src="utils/scoreCalculator.js"></script>
+  <script src="components/scoreCard.js"></script>
+  <script src="components/personaCard.js"></script>
+  <script src="components/keywordList.js"></script>
+  <script src="assets/js/articleLoader.js"></script>
+  <script src="assets/js/analyzer.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

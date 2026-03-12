@@ -1,6 +1,6 @@
 /**
  * ============================================================
- * 大野ヒロアキ流 記事チェック - personaCard.js
+ * oohi Writing Tool - personaCard.js
  * Copyright (c) 2024-2026 大野ヒロアキ (Hiroaki Ohno)
  * All Rights Reserved. 無断複製・転載・再配布を禁じます。
  * ============================================================
@@ -10,11 +10,8 @@ const PersonaCard = (() => {
 
   /**
    * ペルソナカードHTMLを生成
-   * @param {Object} persona { age, gender, job, worry, intent, buyIntent, topKeywords[] }
-   * @returns {string} HTML文字列
    */
   function render(persona) {
-    // 性別に応じたアバターアイコン
     let avatar = '👤';
     if (persona.gender.includes('女性')) avatar = '👩';
     else if (persona.gender.includes('男性')) avatar = '👨';
@@ -41,7 +38,7 @@ const PersonaCard = (() => {
       <div class="card" id="personaCard">
         <div class="card-header">
           <h2>ペルソナ推定</h2>
-          <button class="btn-copy" data-target="persona" title="コピー">📄</button>
+          <button class="btn-copy" data-target="persona" title="コピー">Copy</button>
         </div>
         <div class="persona-profile">
           <div class="persona-avatar">${avatar}</div>
@@ -55,7 +52,7 @@ const PersonaCard = (() => {
    */
   function toText(persona) {
     return [
-      `【ペルソナ推定】`,
+      '【ペルソナ推定】',
       `年齢層: ${persona.age}`,
       `性別傾向: ${persona.gender}`,
       `職業: ${persona.job}`,

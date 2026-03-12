@@ -1,6 +1,6 @@
 /**
  * ============================================================
- * 大野ヒロアキ流 記事チェック - analyzer.js
+ * oohi Writing Tool - analyzer.js
  * Copyright (c) 2024-2026 大野ヒロアキ (Hiroaki Ohno)
  * All Rights Reserved. 無断複製・転載・再配布を禁じます。
  * ============================================================
@@ -10,37 +10,17 @@ const Analyzer = (() => {
 
   /**
    * 全分析を実行して結果オブジェクトを返す
-   * @param {Object} article  ArticleLoader.load() の返却値
-   * @returns {Object} analysisResult
    */
   function analyze(article) {
-    // SEO診断
     const seo = ScoreCalculator.calcSEO(article);
-
-    // CVR診断
     const cvr = ScoreCalculator.calcCVR(article);
-
-    // ペルソナ推定
     const persona = ScoreCalculator.estimatePersona(article);
-
-    // 感情分析
     const emotions = TextAnalyzer.analyzeEmotion(article.bodyText);
-
-    // キーワード分析 TOP10
     const keywords = TextAnalyzer.keywordFrequency(article.bodyText, 10);
-
-    // 改善提案
     const suggestions = ScoreCalculator.generateSuggestions(article, seo, cvr);
+    const advice = ScoreCalculator.generateAdvice(article, seo, cvr);
 
-    return {
-      article,
-      seo,
-      cvr,
-      persona,
-      emotions,
-      keywords,
-      suggestions
-    };
+    return { article, seo, cvr, persona, emotions, keywords, suggestions, advice };
   }
 
   /**
@@ -48,7 +28,7 @@ const Analyzer = (() => {
    */
   function resultToText(result) {
     const lines = [];
-    lines.push('=== 大野ヒロアキ流 記事チェック 診断結果 ===');
+    lines.push('=== oohi Writing Tool 診断結果 ===');
     lines.push('');
     lines.push(`URL: ${result.article.url}`);
     lines.push(`タイトル: ${result.article.title}`);
@@ -56,21 +36,18 @@ const Analyzer = (() => {
     lines.push(`見出し数: ${result.article.headings.length}`);
     lines.push('');
 
-    // SEO
     lines.push(`【SEOスコア】 ${result.seo.total}/100`);
     result.seo.details.forEach(d => {
       lines.push(`  ${d.name}: ${d.score}/${d.max}`);
     });
     lines.push('');
 
-    // CVR
     lines.push(`【CVRスコア】 ${result.cvr.total}/100`);
     result.cvr.details.forEach(d => {
       lines.push(`  ${d.name}: ${d.score}/${d.max}`);
     });
     lines.push('');
 
-    // ペルソナ
     lines.push('【ペルソナ推定】');
     lines.push(`  年齢層: ${result.persona.age}`);
     lines.push(`  性別傾向: ${result.persona.gender}`);
@@ -80,7 +57,6 @@ const Analyzer = (() => {
     lines.push(`  購買意欲: ${result.persona.buyIntent}`);
     lines.push('');
 
-    // 感情
     lines.push('【感情分析】');
     lines.push(`  不安: ${result.emotions.anxiety}%`);
     lines.push(`  期待: ${result.emotions.expectation}%`);
@@ -88,19 +64,38 @@ const Analyzer = (() => {
     lines.push(`  興味: ${result.emotions.interest}%`);
     lines.push('');
 
-    // キーワード
     lines.push('【キーワードTOP10】');
     result.keywords.forEach((kw, i) => {
       lines.push(`  ${i + 1}. ${kw.word} (${kw.count}回)`);
     });
     lines.push('');
 
-    // 改善提案
     lines.push('【改善提案】');
     result.suggestions.forEach((s, i) => {
       const pr = s.priority === 'high' ? '★高' : s.priority === 'mid' ? '◆中' : '○低';
       lines.push(`  ${i + 1}. [${pr}] ${s.title} - ${s.desc}`);
     });
+    lines.push('');
+
+    if (result.advice) {
+      lines.push('【記事改善アドバイス】');
+      if (result.advice.title && result.advice.title.length > 0) {
+        lines.push('  [タイトル]');
+        result.advice.title.forEach(t => lines.push(`    - ${t}`));
+      }
+      if (result.advice.titleExamples && result.advice.titleExamples.length > 0) {
+        lines.push('  [タイトル案]');
+        result.advice.titleExamples.forEach(ex => lines.push(`    - ${ex}`));
+      }
+      if (result.advice.headings && result.advice.headings.length > 0) {
+        lines.push('  [見出し]');
+        result.advice.headings.forEach(h => lines.push(`    - ${h}`));
+      }
+      if (result.advice.intro && result.advice.intro.length > 0) {
+        lines.push('  [導入文]');
+        result.advice.intro.forEach(t => lines.push(`    - ${t}`));
+      }
+    }
 
     return lines.join('\n');
   }
@@ -138,6 +133,16 @@ const Analyzer = (() => {
         return ['【改善提案】',
           ...result.suggestions.map((s, i) => `${i + 1}. ${s.title} - ${s.desc}`)
         ].join('\n');
+      case 'advice': {
+        const lines = ['【記事改善アドバイス】'];
+        if (result.advice) {
+          if (result.advice.title) result.advice.title.forEach(t => lines.push(`  ${t}`));
+          if (result.advice.titleExamples) result.advice.titleExamples.forEach(ex => lines.push(`  タイトル案: ${ex}`));
+          if (result.advice.headings) result.advice.headings.forEach(h => lines.push(`  ${h}`));
+          if (result.advice.intro) result.advice.intro.forEach(t => lines.push(`  ${t}`));
+        }
+        return lines.join('\n');
+      }
       case 'comp':
         return '競合比較データ';
       default:

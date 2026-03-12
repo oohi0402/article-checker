@@ -1,6 +1,6 @@
 /**
  * ============================================================
- * 大野ヒロアキ流 記事チェック - scoreCard.js
+ * oohi Writing Tool - scoreCard.js
  * Copyright (c) 2024-2026 大野ヒロアキ (Hiroaki Ohno)
  * All Rights Reserved. 無断複製・転載・再配布を禁じます。
  * ============================================================
@@ -10,10 +10,6 @@ const ScoreCard = (() => {
 
   /**
    * スコアカードHTMLを生成
-   * @param {string} type  'seo' | 'cvr'
-   * @param {string} label 表示ラベル
-   * @param {Object} result { total, details[] }
-   * @returns {string} HTML文字列
    */
   function render(type, label, result) {
     const fgClass = type === 'seo' ? 'seo-fg' : 'cvr-fg';
@@ -43,7 +39,7 @@ const ScoreCard = (() => {
       <div class="card" id="${type}Card">
         <div class="card-header">
           <h2>${label}</h2>
-          <button class="btn-copy" data-target="${type}" title="コピー">📄</button>
+          <button class="btn-copy" data-target="${type}" title="コピー">Copy</button>
         </div>
         <div class="score-circle-wrap">
           <svg class="score-circle" viewBox="0 0 120 120">
@@ -59,23 +55,18 @@ const ScoreCard = (() => {
 
   /**
    * スコアアニメーション開始
-   * @param {string} type   'seo' | 'cvr'
-   * @param {number} score  0-100
    */
   function animateScore(type, score) {
-    const circumference = 2 * Math.PI * 52; // ≈ 326.73
+    const circumference = 2 * Math.PI * 52;
     const circle = document.getElementById(`${type}Circle`);
     const valueEl = document.getElementById(`${type}Score`);
-
     if (!circle || !valueEl) return;
 
-    // Circle animation
     const offset = circumference - (score / 100) * circumference;
     requestAnimationFrame(() => {
       circle.style.strokeDashoffset = offset;
     });
 
-    // Number count-up
     let current = 0;
     const duration = 1500;
     const step = score / (duration / 16);

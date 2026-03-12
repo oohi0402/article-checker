@@ -1,13 +1,12 @@
 /**
  * ============================================================
- * 大野ヒロアキ流 記事チェック - ui.js
+ * oohi Writing Tool - ui.js
  * Copyright (c) 2024-2026 大野ヒロアキ (Hiroaki Ohno)
  * All Rights Reserved. 無断複製・転載・再配布を禁じます。
  * ============================================================
  * DOM操作・UI更新を担当
  */
 const UI = (() => {
-  // DOM参照
   const els = {};
 
   function cacheElements() {
@@ -27,9 +26,6 @@ const UI = (() => {
     els.toast = document.getElementById('toast');
   }
 
-  /**
-   * ローディング表示/非表示
-   */
   function showLoading() {
     els.loading.classList.remove('hidden');
     els.mainContent.classList.add('hidden');
@@ -39,21 +35,15 @@ const UI = (() => {
     els.loading.classList.add('hidden');
   }
 
-  /**
-   * メインコンテンツ表示
-   */
   function showMain() {
     els.mainContent.classList.remove('hidden');
   }
 
-  /**
-   * 右パネル：記事本文を表示
-   */
   function renderArticle(article) {
     els.articleMeta.innerHTML = `
       <h2>${escapeHTML(article.title)}</h2>
       <div class="meta-url">${escapeHTML(article.url)}</div>
-      <div style="margin-top:8px; font-size:.85rem; color:var(--text-sub);">
+      <div style="margin-top:8px; font-size:.8rem; color:var(--text-muted);">
         文字数: ${article.charCount.toLocaleString()} ｜
         見出し数: ${article.headings.length} ｜
         段落数: ${article.paragraphs}
@@ -62,36 +52,19 @@ const UI = (() => {
     els.articleBody.innerHTML = article.displayHTML;
   }
 
-  /**
-   * 左パネル：全診断結果カードをレンダリング
-   */
   function renderResults(result) {
     let html = '';
-
-    // SEOスコアカード
     html += ScoreCard.render('seo', 'SEO診断', result.seo);
-
-    // CVRスコアカード
     html += ScoreCard.render('cvr', 'CVR診断', result.cvr);
-
-    // ペルソナカード
     html += PersonaCard.render(result.persona);
-
-    // 感情分析
     html += KeywordList.renderEmotion(result.emotions);
-
-    // キーワード分析
     html += KeywordList.renderKeywords(result.keywords);
-
-    // 競合比較
     html += KeywordList.renderCompetitor();
-
-    // 改善提案
     html += KeywordList.renderSuggestions(result.suggestions);
+    html += KeywordList.renderAdvice(result.advice);
 
     els.panelLeft.innerHTML = html;
 
-    // アニメーション発火（少し遅延させる）
     requestAnimationFrame(() => {
       setTimeout(() => {
         ScoreCard.animateScore('seo', result.seo.total);
@@ -102,10 +75,8 @@ const UI = (() => {
     });
   }
 
-  /**
-   * トースト通知
-   */
-  function showToast(msg, duration = 2000) {
+  function showToast(msg, duration) {
+    if (!duration) duration = 2000;
     els.toast.textContent = msg;
     els.toast.classList.remove('hidden');
     setTimeout(() => {
@@ -113,9 +84,6 @@ const UI = (() => {
     }, duration);
   }
 
-  /**
-   * 履歴モーダル表示
-   */
   function showHistory(history) {
     if (history.length === 0) {
       els.historyList.innerHTML = '<div class="history-empty">履歴がありません</div>';
@@ -143,9 +111,6 @@ const UI = (() => {
     els.historyModal.classList.add('hidden');
   }
 
-  /**
-   * テーマ切替
-   */
   function toggleTheme() {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
@@ -161,41 +126,29 @@ const UI = (() => {
     }
   }
 
-  /**
-   * エラー表示
-   */
   function showError(msg) {
     hideLoading();
     showToast(msg, 4000);
   }
 
-  /**
-   * HTMLエスケープ
-   */
   function escapeHTML(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
   }
 
-  /**
-   * URL入力値を取得
-   */
   function getURL() {
     return (els.urlInput.value || '').trim();
   }
 
-  /**
-   * ボタン無効化
-   */
   function disableFetchBtn() {
     els.fetchBtn.disabled = true;
-    els.fetchBtn.textContent = '読み込み中...';
+    els.fetchBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> 読み込み中...';
   }
 
   function enableFetchBtn() {
     els.fetchBtn.disabled = false;
-    els.fetchBtn.textContent = '記事を読み込む';
+    els.fetchBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 分析する';
   }
 
   return {

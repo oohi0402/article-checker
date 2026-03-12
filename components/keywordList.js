@@ -1,10 +1,10 @@
 /**
  * ============================================================
- * 大野ヒロアキ流 記事チェック - keywordList.js
+ * oohi Writing Tool - keywordList.js
  * Copyright (c) 2024-2026 大野ヒロアキ (Hiroaki Ohno)
  * All Rights Reserved. 無断複製・転載・再配布を禁じます。
  * ============================================================
- * キーワード分析・感情分析・競合比較・改善提案カードのHTML生成
+ * キーワード分析・感情分析・競合比較・改善提案・改善アドバイスカードのHTML生成
  */
 const KeywordList = (() => {
 
@@ -25,7 +25,7 @@ const KeywordList = (() => {
       <div class="card" id="keywordCard">
         <div class="card-header">
           <h2>キーワード分析 TOP10</h2>
-          <button class="btn-copy" data-target="keyword" title="コピー">📄</button>
+          <button class="btn-copy" data-target="keyword" title="コピー">Copy</button>
         </div>
         <div class="keyword-cloud">${tagsHTML}</div>
       </div>`;
@@ -59,7 +59,7 @@ const KeywordList = (() => {
       <div class="card" id="emotionCard">
         <div class="card-header">
           <h2>感情分析</h2>
-          <button class="btn-copy" data-target="emotion" title="コピー">📄</button>
+          <button class="btn-copy" data-target="emotion" title="コピー">Copy</button>
         </div>
         <div class="emotion-bars">${barsHTML}</div>
       </div>`;
@@ -72,8 +72,8 @@ const KeywordList = (() => {
     return `
       <div class="card" id="compCard">
         <div class="card-header">
-          <h2>競合比較（疑似）</h2>
-          <button class="btn-copy" data-target="comp" title="コピー">📄</button>
+          <h2>競合比較</h2>
+          <button class="btn-copy" data-target="comp" title="コピー">Copy</button>
         </div>
         <div class="comp-form">
           <input type="text" id="compKeyword" placeholder="キーワードを入力">
@@ -107,8 +107,8 @@ const KeywordList = (() => {
       html += `
         <tr>
           <td>${item.label}</td>
-          <td>${typeof item.mine === 'number' ? item.mine : item.mine}</td>
-          <td>${typeof item.comp === 'number' ? item.comp : item.comp}</td>
+          <td>${item.mine}</td>
+          <td>${item.comp}</td>
           <td class="${diffClass}">${diffStr}</td>
         </tr>`;
     });
@@ -140,10 +140,55 @@ const KeywordList = (() => {
       <div class="card" id="suggestCard">
         <div class="card-header">
           <h2>改善提案</h2>
-          <button class="btn-copy" data-target="suggest" title="コピー">📄</button>
+          <button class="btn-copy" data-target="suggest" title="コピー">Copy</button>
         </div>
         <ol class="suggest-list">${listHTML}</ol>
       </div>`;
+  }
+
+  /**
+   * 記事改善アドバイスカード
+   */
+  function renderAdvice(advice) {
+    if (!advice) return '';
+
+    let html = '<div class="card" id="adviceCard"><div class="card-header"><h2>記事改善アドバイス</h2><button class="btn-copy" data-target="advice" title="コピー">Copy</button></div>';
+
+    // タイトル改善
+    if (advice.title && advice.title.length > 0) {
+      html += '<div class="advice-section"><h3>タイトルの改善</h3>';
+      advice.title.forEach(t => {
+        html += '<div class="advice-item">' + t + '</div>';
+      });
+      if (advice.titleExamples && advice.titleExamples.length > 0) {
+        html += '<div style="margin-top:8px;font-size:.8rem;font-weight:600;color:var(--text-sub);">タイトル案:</div>';
+        advice.titleExamples.forEach(ex => {
+          html += '<div class="advice-title-example">' + ex + '</div>';
+        });
+      }
+      html += '</div>';
+    }
+
+    // 見出し構造改善
+    if (advice.headings && advice.headings.length > 0) {
+      html += '<div class="advice-section"><h3>見出し構造の改善</h3>';
+      advice.headings.forEach(h => {
+        html += '<div class="advice-item">' + h + '</div>';
+      });
+      html += '</div>';
+    }
+
+    // 導入文改善
+    if (advice.intro && advice.intro.length > 0) {
+      html += '<div class="advice-section"><h3>導入文の改善</h3>';
+      advice.intro.forEach(t => {
+        html += '<div class="advice-item">' + t + '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '</div>';
+    return html;
   }
 
   /**
@@ -163,6 +208,7 @@ const KeywordList = (() => {
     renderCompetitor,
     updateCompTable,
     renderSuggestions,
+    renderAdvice,
     animateEmotionBars
   };
 })();
